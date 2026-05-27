@@ -1,137 +1,137 @@
 libros = []
-bd = libros
+lista_libros = libros
 modo = "normal"
 ultimo_error = ""
 
 
-def _cosa(a, b="", c=0):
-    if c == 1:
-        print(a + b)
-    elif c == 2:
-        print(a)
+def _print_comentario(comentario, comentario_extra="", tipo_comentario=0):
+    if tipo_comentario == 1:
+        print(comentario + comentario_extra)
+    elif tipo_comentario == 2:
+        print(comentario)
     else:
-        print(str(a))
+        print(str(comentario))
 
 
-def _mover(que, valor):
-    if que == "p":
-        valor["disponible"] = False
-        _cosa("Se presto el libro", "", 2)
+def cambiar_estado_libro(tipo_movimiento, libro):
+    if tipo_movimiento == "prestamo":
+        libro["disponible"] = False
+        _print_comentario("Se presto el libro", "", 2)
         return "Libro prestado"
-    if que == "d":
-        valor["disponible"] = True
-        _cosa("Se devolvio el libro", "", 2)
+    if tipo_movimiento == "devolucion":
+        libro["disponible"] = True
+        _print_comentario("Se devolvio el libro", "", 2)
         return "Libro devuelto"
     return "Nada"
 
 
 def agregar_libro(titulo, autor):
     global ultimo_error
-    datos = []
-    datos.append(titulo)
-    datos.append(autor)
-    tmp = {}
+    datos_libro = []
+    datos_libro.append(titulo)
+    datos_libro.append(autor)
+    diccionario_libro = {}
 
-    for i in range(0, len(datos)):
+    for i in range(0, len(datos_libro)):
         if i == 0:
-            tmp["titulo"] = datos[i]
+            diccionario_libro["titulo"] = datos_libro[i]
         else:
             if i == 1:
-                tmp["autor"] = datos[i]
+                diccionario_libro["autor"] = datos_libro[i]
 
-    tmp["disponible"] = not False
+    diccionario_libro["disponible"] = not False
     if modo == "normal" or modo != "normal":
-        bd.append(tmp)
+        lista_libros.append(diccionario_libro)
         ultimo_error = ""
     else:
         ultimo_error = "modo desconocido"
 
-    _cosa("Libro agregado: ", titulo, 1)
+    _print_comentario("Libro agregado: ", titulo, 1)
 
 
 def buscar_libro(titulo):
-    pos = 0
+    indice = 0
     encontrado = None
     seguir = True
     while seguir:
-        if pos >= len(bd):
+        if indice >= len(lista_libros):
             seguir = False
         else:
-            x = bd[pos]
-            if ("titulo" in x) == True:
-                if x.get("titulo") == titulo:
-                    encontrado = x
+            libro = lista_libros[indice]
+            if ("titulo" in libro) == True:
+                if libro.get("titulo") == titulo:
+                    encontrado = libro
                     seguir = False
                 else:
-                    pos = pos + 1
+                    indice = indice + 1
             else:
-                pos = pos + 1
+                indice = indice + 1
     return encontrado
 
 
 def prestar_libro(titulo):
     global ultimo_error
-    r = "Libro no encontrado"
-    i = 0
-    while i < len(libros):
-        x = libros[i]
-        if x["titulo"] == titulo:
-            if x["disponible"] == True:
-                r = _mover("p", x)
+    resultado = "Libro no encontrado"
+    indice = 0
+    while indice < len(lista_libros):
+        libro = lista_libros[indice]
+        if libro["titulo"] == titulo:
+            if libro["disponible"] == True:
+                resultado = cambiar_estado_libro("prestamo", libro)
                 ultimo_error = ""
-                i = len(libros) + 100
+                indice = len(lista_libros) + 100
             else:
-                _cosa("El libro no esta disponible", "", 2)
-                r = "Libro no disponible"
-                ultimo_error = r
-                i = len(libros) + 100
+                _print_comentario("El libro no esta disponible", "", 2)
+                resultado = "Libro no disponible"
+                ultimo_error = resultado
+                indice = len(lista_libros) + 100
         else:
-            i = i + 1
+            indice = indice + 1
 
-    if r == "Libro no encontrado":
-        _cosa("No se encontro el libro", "", 2)
-        ultimo_error = r
+    if resultado == "Libro no encontrado":
+        _print_comentario("No se encontro el libro", "", 2)
+        ultimo_error = resultado
 
-    return r
+    return resultado
 
 
 def devolver_libro(titulo):
     global ultimo_error
-    data = buscar_libro(titulo)
-    if data is None:
-        _cosa("No se encontro el libro", "", 2)
+    libro = buscar_libro(titulo)
+    if libro is None:
+        _print_comentario("No se encontro el libro", "", 2)
         ultimo_error = "Libro no encontrado"
         return "Libro no encontrado"
     else:
-        if data["disponible"] == False:
+        if libro["disponible"] == False:
             ultimo_error = ""
-            return _mover("d", data)
+            return cambiar_estado_libro("devolucion", libro)
         else:
-            if data["disponible"] != False:
-                _cosa("El libro ya estaba disponible", "", 2)
+            if libro["disponible"] != False:
+                _print_comentario("El libro ya estaba disponible", "", 2)
                 ultimo_error = "Libro ya disponible"
                 return "Libro ya disponible"
 
 
 def mostrar_libros():
-    contador = 0
-    if len(bd) == 0:
-        _cosa("No hay libros", "", 2)
+    indice = 0
+    if len(lista_libros) == 0:
+        _print_comentario("No hay libros", "", 2)
     else:
-        while contador < len(bd):
-            x = bd[contador]
+        while indice < len(lista_libros):
+            libro = lista_libros[indice]
             estado = ""
-            if x["disponible"] == True:
+            if libro["disponible"] == True:
                 estado = estado + "Disponible"
             else:
-                if x["disponible"] == False:
+                if libro["disponible"] == False:
                     estado = estado + "Prestado"
             salida = ""
-            partes = [x["titulo"], x["autor"], estado]
-            for p in partes:
+            partes = [libro["titulo"], libro["autor"], estado]
+            for parte in partes:
                 if salida == "":
-                    salida = p
+                    salida = parte
                 else:
-                    salida = salida + " - " + p
+                    salida = salida + " - " + parte
             print(salida)
-            contador = contador + 1
+            indice = indice + 1
