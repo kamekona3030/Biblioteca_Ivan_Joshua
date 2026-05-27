@@ -63,6 +63,38 @@ class TestBiblioteca(unittest.TestCase):
         self.assertEqual(biblioteca.ultimo_error, "Libro ya disponible")
 
 
+    def test_print_comentario_tipos_alternativos(self):
+        biblioteca.agregar_libro("El principito", "Antoine de Saint-Exupéry")
+        biblioteca._print_comentario("Libro agregado")
+
+    def test_cambiar_estado_libro_accion_inexistente(self):
+        ejemplo = {"titulo": "Prueba", "autor": "prueba", "disponible":True}
+        resultado = biblioteca._cambiar_estado_libro("accion inexistente", ejemplo)
+        self.assertEqual(resultado, "Nada")
+
+    def test_verificar_libro_sin_titulo(self):
+        ejemplo = {"autor": "prueba"}
+        resultado = biblioteca._verificar_libro(ejemplo, "Titulo")
+        self.assertFalse(resultado)
+
+
+    def test_devolver_libro_inexistente(self):
+        resultado = biblioteca.devolver_libro("Libro fantasma")
+        self.assertEqual(resultado, "Libro no encontrado")
+        self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
+
+    def test_mostrar_flujos_vacio_lleno(self):
+        biblioteca.mostrar_libros()
+
+        biblioteca.agregar_libro("One piece", "Oda")
+        biblioteca.agregar_libro("Hamlet", "William Shakespeare")
+        biblioteca.prestar_libro("Hamlet")
+
+        biblioteca.mostrar_libros()
+
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
