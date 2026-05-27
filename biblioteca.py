@@ -35,7 +35,7 @@ def agregar_libro(titulo, autor):
     global ultimo_error
     diccionario_libro = crear_diccionario_libro(titulo, autor)
 
-    if modo == "normal" or modo != "normal":
+    if modo == "normal":
         lista_libros.append(diccionario_libro)
         ultimo_error = ""
     else:
@@ -57,7 +57,7 @@ def buscar_libro(titulo):
 
 def _comprobar_estado_libro(libro):
     global ultimo_error
-    if libro["disponible"] == True:
+    if libro["disponible"]:
         resultado = _cambiar_estado_libro("prestamo", libro)
         ultimo_error=""
         return  resultado
@@ -81,14 +81,13 @@ def prestar_libro(titulo):
 
 def _comprobar_estado_libro_devolucion(libro):
     global ultimo_error
-    if libro["disponible"] == False:
+    if not libro["disponible"]:
         ultimo_error = ""
         return _cambiar_estado_libro("devolucion", libro)
     else:
-        if libro["disponible"] != False:
-            _print_comentario("El libro ya estaba disponible", "", 2)
-            ultimo_error = "Libro ya disponible"
-            return "Libro ya disponible"
+        _print_comentario("El libro ya estaba disponible", "", 2)
+        ultimo_error = "Libro ya disponible"
+        return "Libro ya disponible"
 
 def devolver_libro(titulo):
     global ultimo_error
@@ -101,12 +100,9 @@ def devolver_libro(titulo):
         return _comprobar_estado_libro_devolucion(libro)
 
 def _obtener_estado(libro):
-    if libro["disponible"] == True:
+    if libro["disponible"]:
         return "Disponible"
-    else:
-        if libro["disponible"] == False:
-            return "Prestado"
-    return ""
+    return "Prestado"
 
 def mostrar_libros():
     if len(lista_libros) == 0:
