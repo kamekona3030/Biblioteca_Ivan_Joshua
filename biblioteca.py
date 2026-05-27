@@ -69,8 +69,6 @@ def _comprobar_estado_libro(libro):
 
 def prestar_libro(titulo):
     global ultimo_error
-    resultado = "Libro no encontrado"
-
     for libro in lista_libros:
         if libro["titulo"] == titulo:
             return _comprobar_estado_libro(libro)
