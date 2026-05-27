@@ -32,6 +32,37 @@ class TestBiblioteca(unittest.TestCase):
         self.assertEqual(resultado, "Libro devuelto")
         self.assertTrue(biblioteca.libros[0]["disponible"])
 
+    def test_buscar_libro_existente_devuelve_diccionario(self):
+        biblioteca.agregar_libro("La vuelta al mundo en 80 dias", "Julio Verne")
+        libro = biblioteca.buscar_libro("La vuelta al mundo en 80 dias")
+
+        self.assertIsNotNone(libro)
+        self.assertEqual(libro["autor"], "Julio Verne")
+
+    def test_buscar_libro_no_existente_devuelve_none(self):
+        libro = biblioteca.buscar_libro("Inventado")
+        self.assertIsNone(libro)
+
+    def test_prestar_libro_no_existente_error(self):
+        resultado = biblioteca.prestar_libro("Inexistente")
+
+        self.assertEqual(resultado, "Libro no encontrado")
+        self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
+
+    def test_prestar_lbro_ya_prestado(self):
+        biblioteca.agregar_libro("La odisea", "Homero")
+        biblioteca.prestar_libro("La odisea")
+        resultado = biblioteca.prestar_libro("La odisea")
+        self.assertEqual(resultado, "Libro no disponible")
+        self.assertEqual(biblioteca.ultimo_error, "Libro no disponible")
+
+    def test_devolver_libro_disponible(self):
+        biblioteca.agregar_libro("Moby dick", "Herman Melville")
+        resultado = biblioteca.devolver_libro("Moby dick")
+        self.assertEqual(resultado, "Libro ya disponible")
+        self.assertEqual(biblioteca.ultimo_error, "Libro ya disponible")
+
+
 
 if __name__ == "__main__":
     unittest.main()
