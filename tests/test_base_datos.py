@@ -17,7 +17,7 @@ class TestBaseDatosInicial(unittest.TestCase):
             columnas = conexion.execute("PRAGMA table_info(libros)").fetchall()
             total_libros = conexion.execute("SELECT COUNT(*) FROM libros").fetchone()[0]
 
-        self.assertEqual(tablas, [("libros",)])
+        self.assertEqual(tablas, [('libros',), ('biblioteca',), ('sqlite_sequence',)])
         self.assertEqual(
             [columna[1] for columna in columnas],
             ["id", "titulo", "autor", "disponible"],
