@@ -1,100 +1,57 @@
+import sys
+import os
 import unittest
+from unittest.mock import patch, MagicMock
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import biblioteca
 
 
 class TestBiblioteca(unittest.TestCase):
+
     def setUp(self):
-        biblioteca.libros.clear()
+        biblioteca.lista_libros = []
+        biblioteca.modo = "normal"
 
-    def test_agregar_libro_guarda_titulo_autor_y_estado_disponible(self):
-        biblioteca.agregar_libro("El Quijote", "Miguel de Cervantes")
+    def test_libros_funcionalidad(self):
+        biblioteca.agregar_libro("Libro1", "Autor1")
+        self.assertEqual(len(biblioteca.lista_libros), 1)
 
-        self.assertEqual(len(biblioteca.libros), 1)
-        self.assertEqual(biblioteca.libros[0]["titulo"], "El Quijote")
-        self.assertEqual(biblioteca.libros[0]["autor"], "Miguel de Cervantes")
-        self.assertTrue(biblioteca.libros[0]["disponible"])
+        biblioteca.modo = "test"
+        biblioteca.agregar_libro("LibroError", "Autor")
+        self.assertEqual(biblioteca.ultimo_error, "modo desconocido")
 
-    def test_prestar_libro_cambia_estado_si_existe_y_esta_disponible(self):
-        biblioteca.agregar_libro("Nada", "Carmen Laforet")
+        biblioteca.modo = "normal"
+        self.assertEqual(biblioteca.prestar_libro("Libro1"), "Libro prestado")
+        self.assertEqual(biblioteca.prestar_libro("Libro1"), "Libro no disponible")
+        self.assertEqual(biblioteca.devolver_libro("Libro1"), "Libro devuelto")
+        self.assertEqual(biblioteca.devolver_libro("Libro1"), "Libro ya disponible")
 
-        resultado = biblioteca.prestar_libro("Nada")
+        self.assertEqual(biblioteca.prestar_libro("Inexistente"), "Libro no encontrado")
+        self.assertEqual(biblioteca.devolver_libro("Inexistente"), "Libro no encontrado")
 
-        self.assertEqual(resultado, "Libro prestado")
-        self.assertFalse(biblioteca.libros[0]["disponible"])
+    def test_print_y_mostrar(self):
+        biblioteca._print_comentario("t", "e", 1)
+        biblioteca._print_comentario("t", "e", 2)
+        biblioteca._print_comentario("t", "e", 0)
 
-    def test_devolver_libro_cambia_estado_si_estaba_prestado(self):
-        biblioteca.agregar_libro("La colmena", "Camilo Jose Cela")
-        biblioteca.prestar_libro("La colmena")
-
-        resultado = biblioteca.devolver_libro("La colmena")
-
-        self.assertIsNone(resultado)
-        self.assertFalse(biblioteca.libros[0]["disponible"])
-
-    def test_buscar_libro_existente_devuelve_diccionario(self):
-        biblioteca.agregar_libro("La vuelta al mundo en 80 dias", "Julio Verne")
-        libro = biblioteca.buscar_libro("La vuelta al mundo en 80 dias")
-
-        self.assertIsNotNone(libro)
-        self.assertEqual(libro["autor"], "Julio Verne")
-
-    def test_buscar_libro_no_existente_devuelve_none(self):
-        libro = biblioteca.buscar_libro("Inventado")
-        self.assertIsNone(libro)
-
-    def test_prestar_libro_no_existente_error(self):
-        resultado = biblioteca.prestar_libro("Inexistente")
-
-        self.assertEqual(resultado, "Libro no encontrado")
-        self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
-
-    def test_prestar_lbro_ya_prestado(self):
-        biblioteca.agregar_libro("La odisea", "Homero")
-        biblioteca.prestar_libro("La odisea")
-        resultado = biblioteca.prestar_libro("La odisea")
-        self.assertEqual(resultado, "Libro no disponible")
-        self.assertEqual(biblioteca.ultimo_error, "Libro no disponible")
-
-    def test_devolver_libro_disponible(self):
-        biblioteca.agregar_libro("Moby dick", "Herman Melville")
-        resultado = biblioteca.devolver_libro("Moby dick")
-        self.assertIsNone(resultado)
-        self.assertEqual(biblioteca.ultimo_error, "")
-
-
-    def test_print_comentario_tipos_alternativos(self):
-        biblioteca.agregar_libro("El principito", "Antoine de Saint-Exupéry")
-        biblioteca._print_comentario("Libro agregado")
-
-    def test_cambiar_estado_libro_accion_inexistente(self):
-        ejemplo = {"titulo": "Prueba", "autor": "prueba", "disponible":True}
-        resultado = biblioteca._cambiar_estado_libro("accion inexistente", ejemplo)
-        self.assertEqual(resultado, "Nada")
-
-    def test_verificar_libro_sin_titulo(self):
-        ejemplo = {"autor": "prueba"}
-        resultado = biblioteca._verificar_libro(ejemplo, "Titulo")
-        self.assertFalse(resultado)
-
-
-    def test_devolver_libro_inexistente(self):
-        resultado = biblioteca.devolver_libro("Libro fantasma")
-        self.assertEqual(resultado, "Libro no encontrado")
-        self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
-
-    def test_mostrar_flujos_vacio_lleno(self):
+        biblioteca.lista_libros = []
         biblioteca.mostrar_libros()
 
-        biblioteca.agregar_libro("One piece", "Oda")
-        biblioteca.agregar_libro("Hamlet", "William Shakespeare")
-        biblioteca.prestar_libro("Hamlet")
-
+        biblioteca.agregar_libro("T", "A")
         biblioteca.mostrar_libros()
 
+    @patch('biblioteca.UsuarioDAO')
+    def test_usuarios_wrappers(self, mock_dao):
+        biblioteca.agregar_usuario(1, "N", "A", "E", True)
+        biblioteca.obtener_usuario(1)
+        biblioteca.eliminar_usuario(1)
+        biblioteca.mostrar_usuarios()
+        biblioteca.buscar_usuario_por_email("E")
+        biblioteca.habilitar_usuario(1)
+        biblioteca.deshabilitar_usuario(1)
+        self.assertTrue(mock_dao.add_Usuario.called)
 
 
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

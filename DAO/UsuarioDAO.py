@@ -21,6 +21,7 @@ def add_Usuario(usuario:Usuario):
             ultimo_error= ""
     except Exception as e:
         ultimo_error = str(e)
+    return 0
 
 
 def get_Usuario(id_usuario:int):

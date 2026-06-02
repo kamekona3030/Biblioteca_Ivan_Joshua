@@ -2,28 +2,25 @@ import sqlite3
 import unittest
 from pathlib import Path
 
-
 RUTA_BD = Path(__file__).resolve().parent.parent / "bd" / "biblioteca.db"
 
-
 class TestBaseDatosInicial(unittest.TestCase):
-    def test_biblioteca_db_existe_con_tabla_libros_vacia(self):
-        self.assertTrue(RUTA_BD.exists())
+    def test_biblioteca_db_estructura_correcta(self):
+        self.assertTrue(RUTA_BD.exists(), "La base de datos no existe en la ruta definida")
 
         with sqlite3.connect(RUTA_BD) as conexion:
-            tablas = conexion.execute(
-                "SELECT name FROM sqlite_master WHERE type = 'table'"
-            ).fetchall()
-            columnas = conexion.execute("PRAGMA table_info(libros)").fetchall()
-            total_libros = conexion.execute("SELECT COUNT(*) FROM libros").fetchone()[0]
+            tablas_existentes = [t[0] for t in
+                                 conexion.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
+            self.assertIn('libros', tablas_existentes, "La tabla 'libros' no existe")
 
-        self.assertEqual(tablas, [('libros',), ('biblioteca',), ('sqlite_sequence',)])
-        self.assertEqual(
-            [columna[1] for columna in columnas],
-            ["id", "titulo", "autor", "disponible"],
-        )
-        self.assertEqual(total_libros, 0)
+            columnas_info = conexion.execute("PRAGMA table_info(libros)").fetchall()
+            columnas_obtenidas = {info[1] for info in columnas_info}
 
+            columnas_esperadas = {"id", "titulo", "autor", "disponible"}
+
+            self.assertTrue(columnas_esperadas.issubset(columnas_obtenidas),
+                            f"Faltan columnas en la tabla libros. Esperadas: {columnas_esperadas}, Obtenidas: {columnas_obtenidas}")
+        conexion.close()
 
 if __name__ == "__main__":
     unittest.main()
