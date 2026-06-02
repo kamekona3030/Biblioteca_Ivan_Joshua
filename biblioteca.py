@@ -1,3 +1,7 @@
+from Usuario import Usuario
+from DAO import UsuarioDAO
+
+
 libros = []
 lista_libros = libros
 modo = "normal"
@@ -95,7 +99,7 @@ def devolver_libro(titulo):
         ultimo_error = "Libro no encontrado"
         return "Libro no encontrado"
     else:
-        return _comprobar_estado_libro("devolver",libro)
+        return _comprobar_estado_libro("devolucion",libro)
 
 def _obtener_estado(libro):
     if libro["disponible"]:
@@ -117,3 +121,57 @@ def mostrar_libros():
                 else:
                     salida = salida + " - " + parte
             print(salida)
+
+
+def agregar_usuario(id_usuario: int, nombre: str, apellidos: str, email: str, habilitado: bool):
+    global ultimo_error
+    nuevo_usuariio = Usuario(id_usuario, nombre, apellidos, email, habilitado)
+    UsuarioDAO.add_Usuario(nuevo_usuariio)
+    ultimo_error = UsuarioDAO.ultimo_error
+
+def obtener_usuario(id_usuario: int):
+    global ultimo_error
+    usuario = UsuarioDAO.get_Usuario(id_usuario)
+    ultimo_error = UsuarioDAO.ultimo_error
+    return usuario
+
+def eliminar_usuario(id_usuario: int):
+    global ultimo_error
+    filas = UsuarioDAO.remove_Usuario(id_usuario)
+    ultimo_error = UsuarioDAO.ultimo_error
+    return filas
+
+def mostrar_usuarios():
+    global ultimo_error
+    lista_usuarios = UsuarioDAO.list_all_Usuarios()
+    ultimo_error = UsuarioDAO.ultimo_error
+    if len(lista_usuarios) == 0:
+        _print_comentario("No hay usuarios", "", 2)
+    else:
+        for usuario in lista_usuarios:
+            print(usuario)
+
+def buscar_usuario_por_email(email: str):
+    global ultimo_error
+    usuario = UsuarioDAO.buscar_por_email(email)
+    ultimo_error = UsuarioDAO.ultimo_error
+    return usuario
+
+def buscar_usuario_por_nombre_parcial(nombre: str):
+    global ultimo_error
+    lista = UsuarioDAO.buscar_por_nombre_parcial(nombre)
+    ultimo_error = UsuarioDAO.ultimo_error
+    return lista
+
+
+def habilitar_usuario(id_usuario: int):
+    global ultimo_error
+    resultado = UsuarioDAO.habilitar_usuario(id_usuario)
+    ultimo_error = UsuarioDAO.ultimo_error
+    return resultado
+
+def deshabilitar_usuario(id_usuario: int):
+    global ultimo_error
+    resultado = UsuarioDAO.deshabilitar_usuario(id_usuario)
+    ultimo_error = UsuarioDAO.ultimo_error
+    return resultado
