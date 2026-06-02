@@ -32,6 +32,7 @@ class TestBiblioteca(unittest.TestCase):
         mock_remove.return_value = 0
         resultado = biblioteca.borrar_libro(99)
         self.assertEqual(resultado, 0)
+
         self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
 
     @patch('biblioteca.list_all')
@@ -49,6 +50,7 @@ class TestBiblioteca(unittest.TestCase):
         mock_update.return_value = True
         res = biblioteca.prestar_libro("Test")
         self.assertEqual(res, "Libro prestado")
+
 
     @patch('biblioteca.buscar_libro')
     def test_prestar_libro_no_disponible(self, mock_buscar):
