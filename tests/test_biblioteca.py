@@ -29,8 +29,8 @@ class TestBiblioteca(unittest.TestCase):
 
         resultado = biblioteca.devolver_libro("La colmena")
 
-        self.assertEqual(resultado, "Libro devuelto")
-        self.assertTrue(biblioteca.libros[0]["disponible"])
+        self.assertIsNone(resultado)
+        self.assertFalse(biblioteca.libros[0]["disponible"])
 
     def test_buscar_libro_existente_devuelve_diccionario(self):
         biblioteca.agregar_libro("La vuelta al mundo en 80 dias", "Julio Verne")
@@ -59,8 +59,8 @@ class TestBiblioteca(unittest.TestCase):
     def test_devolver_libro_disponible(self):
         biblioteca.agregar_libro("Moby dick", "Herman Melville")
         resultado = biblioteca.devolver_libro("Moby dick")
-        self.assertEqual(resultado, "Libro ya disponible")
-        self.assertEqual(biblioteca.ultimo_error, "Libro ya disponible")
+        self.assertIsNone(resultado)
+        self.assertEqual(biblioteca.ultimo_error, "")
 
 
     def test_print_comentario_tipos_alternativos(self):
