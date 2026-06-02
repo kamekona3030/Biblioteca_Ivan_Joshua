@@ -55,37 +55,37 @@ def buscar_libro(titulo):
 
     return None
 
-def _comprobar_estado_libro(libro):
+def _comprobar_estado_libro(tipo_movimiento,libro):
     global ultimo_error
-    if libro["disponible"]:
-        resultado = _cambiar_estado_libro("prestamo", libro)
-        ultimo_error=""
-        return  resultado
-    else:
-        _print_comentario("El libro no esta disponible","", 2)
-        resultado = "Libro no disponible"
-        ultimo_error = resultado
-        return resultado
+    if tipo_movimiento =="prestamo":
+        if libro["disponible"]:
+            resultado = _cambiar_estado_libro("prestamo", libro)
+            ultimo_error=""
+            return  resultado
+        else:
+            _print_comentario("El libro no esta disponible","", 2)
+            resultado = "Libro no disponible"
+            ultimo_error = resultado
+            return resultado
+    elif tipo_movimiento == "devolucion":
+        if not libro["disponible"]:
+            ultimo_error = ""
+            return _cambiar_estado_libro("devolucion", libro)
+        else:
+            _print_comentario("El libro ya estaba disponible", "", 2)
+            ultimo_error = "Libro ya disponible"
+            return "Libro ya disponible"
 
 def prestar_libro(titulo):
     global ultimo_error
     for libro in lista_libros:
         if libro["titulo"] == titulo:
-            return _comprobar_estado_libro(libro)
+            return _comprobar_estado_libro("prestamo",libro)
 
     _print_comentario("No se ha encontrado el libro","",2)
     ultimo_error = "Libro no encontrado"
     return "Libro no encontrado"
 
-def _comprobar_estado_libro_devolucion(libro):
-    global ultimo_error
-    if not libro["disponible"]:
-        ultimo_error = ""
-        return _cambiar_estado_libro("devolucion", libro)
-    else:
-        _print_comentario("El libro ya estaba disponible", "", 2)
-        ultimo_error = "Libro ya disponible"
-        return "Libro ya disponible"
 
 def devolver_libro(titulo):
     global ultimo_error
@@ -95,7 +95,7 @@ def devolver_libro(titulo):
         ultimo_error = "Libro no encontrado"
         return "Libro no encontrado"
     else:
-        return _comprobar_estado_libro_devolucion(libro)
+        return _comprobar_estado_libro("devolver",libro)
 
 def _obtener_estado(libro):
     if libro["disponible"]:
