@@ -9,18 +9,21 @@ class TestBaseDatosInicial(unittest.TestCase):
         self.assertTrue(RUTA_BD.exists(), "La base de datos no existe en la ruta definida")
 
         with sqlite3.connect(RUTA_BD) as conexion:
-            tablas_existentes = [t[0] for t in
-                                 conexion.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
-            self.assertIn('libros', tablas_existentes, "La tabla 'libros' no existe")
+            # 1. Validar tabla 'libros'
+            tablas_libros = conexion.execute("PRAGMA table_info(libros)").fetchall()
+            columnas_libros = [info[1] for info in tablas_libros]
+            columnas_esperadas_libros = ["id", "titulo", "autor", "disponible", "isbn", "categoria",
+                                         "fecha_actualizacion"]
+            self.assertEqual(columnas_libros, columnas_esperadas_libros, "Error en estructura de tabla 'libros'")
 
-            columnas_info = conexion.execute("PRAGMA table_info(libros)").fetchall()
-            columnas_obtenidas = {info[1] for info in columnas_info}
+            # 2. Validar tabla 'usuarios'
+            tablas_usuarios = conexion.execute("PRAGMA table_info(usuarios)").fetchall()
+            columnas_usuarios = [info[1] for info in tablas_usuarios]
+            columnas_esperadas_usuarios = ["id_usuario", "nombre", "apellidos", "email", "habilitado"]
+            self.assertEqual(columnas_usuarios, columnas_esperadas_usuarios, "Error en estructura de tabla 'usuarios'")
 
-            columnas_esperadas = {"id", "titulo", "autor", "disponible"}
-
-            self.assertTrue(columnas_esperadas.issubset(columnas_obtenidas),
-                            f"Faltan columnas en la tabla libros. Esperadas: {columnas_esperadas}, Obtenidas: {columnas_obtenidas}")
         conexion.close()
 
 if __name__ == "__main__":
     unittest.main()
+

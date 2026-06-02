@@ -1,12 +1,14 @@
+
 from Usuario import Usuario
 from DAO import UsuarioDAO
+from Libro import Libro
+from DAO.LibroDAO import (add_libro,get_libro,
+                          remove_libro,list_all,buscar_por_autor,
+                          buscar_por_disponibilidad,actualizar_disponibilidad)
 
-
-libros = []
-lista_libros = libros
+"""Clase encargada de la gestión de los metodos"""
 modo = "normal"
 ultimo_error = ""
-
 
 def _print_comentario(comentario, comentario_extra="", tipo_comentario=0):
     if tipo_comentario == 1:
@@ -16,36 +18,46 @@ def _print_comentario(comentario, comentario_extra="", tipo_comentario=0):
     else:
         print(str(comentario))
 
-
-def _cambiar_estado_libro(tipo_movimiento, libro):
-    if tipo_movimiento == "prestamo":
-        libro["disponible"] = False
-        _print_comentario("Se presto el libro", "", 2)
-        return "Libro prestado"
-    if tipo_movimiento == "devolucion":
-        libro["disponible"] = True
-        _print_comentario("Se devolvio el libro", "", 2)
-        return "Libro devuelto"
-    return "Nada"
-
-def crear_diccionario_libro(titulo, autor):
-    return {
-        "titulo": titulo,
-        "autor": autor,
-        "disponible": True
-    }
-
 def agregar_libro(titulo, autor):
+    """Crea y registra un nuevo libro en la base de datos"""
     global ultimo_error
-    diccionario_libro = crear_diccionario_libro(titulo, autor)
-
     if modo == "normal":
-        lista_libros.append(diccionario_libro)
-        ultimo_error = ""
+        try:
+            libros_actuales = list_all()
+            nuevo_id = max([l.id for l in libros_actuales], default=0) + 1
+
+            nuevo_libro = Libro(
+                id_libro=nuevo_id,
+                titulo=titulo,
+                autor=autor,
+                isbn="000-00000-0",
+                disponible=True,
+                categoria="General"
+            )
+
+            add_libro(nuevo_libro)
+            ultimo_error = ""
+        except Exception as e:
+            ultimo_error = str(e)
     else:
         ultimo_error = "modo desconocido"
 
     _print_comentario("Libro agregado: ", titulo, 1)
+
+def borrar_libro(id_libro: int):
+    """Elimina un libro por su ID"""
+    global ultimo_error
+    try:
+        filas_eliminadas = remove_libro(id_libro)
+        ultimo_error = ""
+        if filas_eliminadas > 0:
+            _print_comentario(f"Libro con ID {id_libro} eliminado.", "", 2)
+        else:
+            ultimo_error = "Libro no encontrado"
+        return filas_eliminadas
+    except Exception as e:
+        ultimo_error = str(e)
+        return 0
 
 def _verificar_libro(libro, titulo):
     if "titulo" in libro:
@@ -53,53 +65,58 @@ def _verificar_libro(libro, titulo):
     return False
 
 def buscar_libro(titulo):
-    for libro in lista_libros:
-        if (_verificar_libro(libro,titulo)):
-            return libro
-
+    """Busca un libro por su título. Devuelve el diccionario del libro o None"""
+    for libro_objeto in list_all():
+        libro_dict = libro_objeto.to_dict()
+        if _verificar_libro(libro_dict, titulo):
+            return libro_dict
     return None
 
-def _comprobar_estado_libro(tipo_movimiento,libro):
-    global ultimo_error
-    if tipo_movimiento =="prestamo":
-        if libro["disponible"]:
-            resultado = _cambiar_estado_libro("prestamo", libro)
-            ultimo_error=""
-            return  resultado
-        else:
-            _print_comentario("El libro no esta disponible","", 2)
-            resultado = "Libro no disponible"
-            ultimo_error = resultado
-            return resultado
-    elif tipo_movimiento == "devolucion":
-        if not libro["disponible"]:
-            ultimo_error = ""
-            return _cambiar_estado_libro("devolucion", libro)
-        else:
-            _print_comentario("El libro ya estaba disponible", "", 2)
-            ultimo_error = "Libro ya disponible"
-            return "Libro ya disponible"
 
 def prestar_libro(titulo):
+    """Cambia el estado de un libro a 'prestado' si está disponible"""
     global ultimo_error
-    for libro in lista_libros:
-        if libro["titulo"] == titulo:
-            return _comprobar_estado_libro("prestamo",libro)
+    libro_dict = buscar_libro(titulo)
 
-    _print_comentario("No se ha encontrado el libro","",2)
-    ultimo_error = "Libro no encontrado"
-    return "Libro no encontrado"
+    if libro_dict is None:
+        _print_comentario("No se ha encontrado el libro", "", 2)
+        ultimo_error = "Libro no encontrado"
+        return "Libro no encontrado"
+
+    if libro_dict["disponible"]:
+        if actualizar_disponibilidad(libro_dict["id"], False):
+            ultimo_error = ""
+            _print_comentario("Se presto el libro", "", 2)
+            return "Libro prestado"
+        else:
+            return "Error"
+    else:
+        _print_comentario("El libro no esta disponible", "", 2)
+        ultimo_error = "Libro no disponible"
+        return "Libro no disponible"
 
 
 def devolver_libro(titulo):
+    """Cambia el estado de un libro a disponible"""
     global ultimo_error
-    libro = buscar_libro(titulo)
-    if libro is None:
+    libro_dict = buscar_libro(titulo)
+
+    if libro_dict is None:
         _print_comentario("No se encontro el libro", "", 2)
         ultimo_error = "Libro no encontrado"
         return "Libro no encontrado"
+
+    if not libro_dict["disponible"]:
+        if actualizar_disponibilidad(libro_dict["id"], True):
+            ultimo_error = ""
+            _print_comentario("Se devolvio el libro", "", 2)
+            return "Libro devuelto"
+        else:
+            return "Error"
     else:
-        return _comprobar_estado_libro("devolucion",libro)
+        _print_comentario("El libro ya estaba disponible", "", 2)
+        ultimo_error = "Libro ya disponible"
+        return "Libro ya disponible"
 
 def _obtener_estado(libro):
     if libro["disponible"]:
@@ -107,21 +124,16 @@ def _obtener_estado(libro):
     return "Prestado"
 
 def mostrar_libros():
-    if len(lista_libros) == 0:
-        _print_comentario("No hay libros", "", 2)
-    else:
-        for libro in lista_libros:
-            estado = _obtener_estado(libro)
-            salida = ""
-            partes = [libro["titulo"], libro["autor"], estado]
-
-            for parte in partes:
-                if salida == "":
-                    salida = parte
-                else:
-                    salida = salida + " - " + parte
-            print(salida)
-
+    """Imprime en consola la lista completa de libros registrados"""
+    try:
+        libros_bd = list_all()
+        if len(libros_bd) == 0:
+            _print_comentario("No hay libros", "", 2)
+        else:
+            for libro in libros_bd:
+                print(libro)
+    except Exception as e:
+        _print_comentario(f"Error al listar: {e}", "", 2)
 
 def agregar_usuario(id_usuario: int, nombre: str, apellidos: str, email: str, habilitado: bool):
     global ultimo_error
@@ -175,3 +187,39 @@ def deshabilitar_usuario(id_usuario: int):
     resultado = UsuarioDAO.deshabilitar_usuario(id_usuario)
     ultimo_error = UsuarioDAO.ultimo_error
     return resultado
+
+def buscar_libros_por_disponibilidad(disponible: bool):
+    """Llama al DAO para obtener libros por el estado y los convierte en diccionario"""
+    global ultimo_error
+    try:
+        resultados = buscar_por_disponibilidad(disponible)
+        ultimo_error = ""
+        return [libro.to_dict() for libro in resultados]
+    except Exception as e:
+        ultimo_error = str(e)
+        return []
+
+def buscar_libros_por_autor(autor: str):
+    """Llama al DAO para obtener los libros que coincidan con el autor"""
+    global ultimo_error
+    try:
+        resultados = buscar_por_autor(autor)
+        ultimo_error = ""
+        return [libro.to_dict() for libro in resultados]
+    except Exception as e:
+        ultimo_error = str(e)
+        return []
+
+def buscar_libros_por_ID(id_libro: int):
+    """Busca un libro por su ID y lo devuelve como diccionario"""
+    global ultimo_error
+    try:
+        libro_obj = get_libro(id_libro)
+        if libro_obj:
+            ultimo_error = ""
+            return libro_obj.to_dict()
+        ultimo_error = "Libro no encontrado"
+        return None
+    except Exception as e:
+        ultimo_error = str(e)
+        return None
