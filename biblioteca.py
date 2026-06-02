@@ -3,7 +3,6 @@ lista_libros = libros
 modo = "normal"
 ultimo_error = ""
 
-
 def _print_comentario(comentario, comentario_extra="", tipo_comentario=0):
     if tipo_comentario == 1:
         print(comentario + comentario_extra)
