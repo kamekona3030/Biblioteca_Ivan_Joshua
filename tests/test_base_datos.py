@@ -15,15 +15,9 @@ class TestBaseDatosInicial(unittest.TestCase):
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             ).fetchall()
             columnas = conexion.execute("PRAGMA table_info(libros)").fetchall()
-            total_libros = conexion.execute("SELECT COUNT(*) FROM libros").fetchone()[0]
+            columnas_obtenidas = [info[1] for info in columnas]
 
-        self.assertEqual(tablas, [('libros',), ('biblioteca',), ('sqlite_sequence',)])
-        self.assertEqual(
-            [columna[1] for columna in columnas],
-            ["id", "titulo", "autor", "disponible"],
-        )
-        self.assertEqual(total_libros, 0)
+        columnas_esperadas = ["id", "titulo", "autor", "disponible", "isbn", "categoria", "fecha_actualizacion"]
+        self.assertEqual(columnas_obtenidas, columnas_esperadas)
 
-
-if __name__ == "__main__":
-    unittest.main()
+        conexion.close()

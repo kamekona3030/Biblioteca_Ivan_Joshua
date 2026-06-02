@@ -1,6 +1,7 @@
 from Libro import Libro
 from Conexion import getConexion
 
+"""Clase encargada de hacer las llamada y peticiones a la base de datos"""
 def add_libro(libro: Libro):
     """En metodo add libro es el encargado de añadir libros a la base de datos"""
     global ultimo_error
@@ -97,26 +98,27 @@ def buscar_por_disponibilidad(disponible: bool):
     """Filtra libros diferenciando si están disponibles o prestados """
     estado = 1 if disponible else 0
     try:
-        conn = getConexion()
-        cursor = conn.cursor()
-        cursor.execute("SELECT id,titulo,autor,isbn,disponible,categoria FROM libros WHERE disponible = ?",
-                       (estado,))
-        filas = cursor.fetchall()
-        conn.close()
+        with getConexion() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, titulo, autor, isbn, disponible, categoria FROM libros WHERE disponible = ?",
+                           (estado,))
+            filas = cursor.fetchall()
 
-        return [Libro(f[0],f[1],f[2],f[3],bool(f[4]),f[5]) for f in filas]
+        return [Libro(f[0], f[1], f[2], f[3], bool(f[4]), f[5]) for f in filas]
     except Exception:
         return []
 
 def buscar_por_autor(autor: str):
     """Busca libros cuyo autor coincida """
     try:
-        conn = getConexion()
-        cursor = conn.cursor()
-        cursor.execute("SELECT id,titulo,autor,isbn,disponible,categoria FROM libros WHERE autor LIKE ?", (f"%{autor}%",))
-        filas = cursor.fetchall()
-        conn.close()
-        return [Libro(id_libro=f[0], titulo=f[1], autor=f[2],isbn=f[3], disponible=bool(f[4]),  categoria=f[5]) for f in filas]
+        with getConexion() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, titulo, autor, isbn, disponible, categoria FROM libros WHERE autor LIKE ?",
+                           (f"%{autor}%",))
+            filas = cursor.fetchall()
+
+        return [Libro(id_libro=f[0], titulo=f[1], autor=f[2], isbn=f[3], disponible=bool(f[4]), categoria=f[5]) for f in
+                filas]
     except Exception:
         return []
 
