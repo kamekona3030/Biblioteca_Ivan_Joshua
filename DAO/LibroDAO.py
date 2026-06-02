@@ -11,11 +11,11 @@ def add_libro(libro: Libro):
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO libros (id, titulo, autor, disponible, isbn, categoria, fecha_actualizacion)
+                INSERT INTO libros (id, titulo, autor, isbn, disponible,  categoria, fecha_actualizacion)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
-                (libro.id, libro.titulo, libro.autor, estado_disponible,
-                 libro.isbn, libro.categoria, libro.fecha_actualizacion)
+                (libro.id, libro.titulo, libro.autor, libro.isbn,
+                 estado_disponible,libro.categoria, libro.fecha_actualizacion)
             )
             conn.commit()
         ultimo_error = ""
@@ -45,7 +45,7 @@ def get_libro(id_libro: int):
     try:
         with getConexion() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, titulo, autor, disponible, isbn, categoria FROM libros WHERE id = ?",
+            cursor.execute("SELECT id, titulo, autor,isbn, disponible,  categoria FROM libros WHERE id = ?",
                            (id_libro,))
             fila = cursor.fetchone()
 
@@ -55,8 +55,8 @@ def get_libro(id_libro: int):
                 id_libro=fila[0],
                 titulo=fila[1],
                 autor=fila[2],
-                disponible=bool(fila[3]),
-                isbn=fila[4],
+                isbn=fila[3],
+                disponible=bool(fila[4]),
                 categoria=fila[5]
             )
         ultimo_error = "Libro no encontrado"
@@ -72,7 +72,7 @@ def list_all():
     try:
         with getConexion() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, titulo, autor, disponible, isbn, categoria FROM libros")
+            cursor.execute("SELECT id, titulo, autor,isbn, disponible,  categoria FROM libros")
             filas = cursor.fetchall()
 
         lista = []
@@ -82,8 +82,8 @@ def list_all():
                     id_libro=fila[0],
                     titulo=fila[1],
                     autor=fila[2],
-                    disponible=bool(fila[3]),
-                    isbn=fila[4],
+                    isbn=fila[3],
+                    disponible=bool(fila[4]),
                     categoria=fila[5]
                 )
             )
@@ -92,3 +92,46 @@ def list_all():
     except Exception as e:
         ultimo_error = str(e)
         return []
+
+def buscar_por_disponibilidad(disponible: bool):
+    """Filtra libros diferenciando si están disponibles o prestados """
+    estado = 1 if disponible else 0
+    try:
+        conn = getConexion()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id,titulo,autor,isbn,disponible,categoria FROM libros WHERE disponible = ?",
+                       (estado,))
+        filas = cursor.fetchall()
+        conn.close()
+
+        return [Libro(f[0],f[1],f[2],f[3],bool(f[4]),f[5]) for f in filas]
+    except Exception:
+        return []
+
+def buscar_por_autor(autor: str):
+    """Busca libros cuyo autor coincida """
+    try:
+        conn = getConexion()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id,titulo,autor,isbn,disponible,categoria FROM libros WHERE autor LIKE ?", (f"%{autor}%",))
+        filas = cursor.fetchall()
+        conn.close()
+        return [Libro(id_libro=f[0], titulo=f[1], autor=f[2],isbn=f[3], disponible=bool(f[4]),  categoria=f[5]) for f in filas]
+    except Exception:
+        return []
+
+def actualizar_disponibilidad(id_libro: int, disponible: bool) -> bool:
+    """Actualiza el estado de disponibilidad de un libro gracias a su ID"""
+    global ultimo_error
+    estado = 1 if disponible else 0
+    try:
+        with getConexion() as conn:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE libros SET disponible = ? WHERE id = ?", (estado, id_libro))
+            conn.commit()
+            filas_afectadas = cursor.rowcount
+        ultimo_error = ""
+        return filas_afectadas > 0
+    except Exception as e:
+        ultimo_error = str(e)
+        return False
