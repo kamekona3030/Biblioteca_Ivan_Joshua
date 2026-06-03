@@ -53,7 +53,7 @@ class TestUsuarioDAO(unittest.TestCase):
     def test_usuario_no_encontrado(self, mock_get_conn):
         mock_conn = MagicMock()
         mock_get_conn.return_value.__enter__.return_value = mock_conn
-        mock_conn.cursor.return_value.fetchone.return_value = None  # Simula no encontrado
+        mock_conn.cursor.return_value.fetchone.return_value = None
 
         self.assertIsNone(UsuarioDAO.get_Usuario(99))
         self.assertEqual(UsuarioDAO.ultimo_error, "Usuario no encontrado")

@@ -5,13 +5,9 @@ from Conexion import getConexion
 ultimo_error = ""
 
 
-def registrar_devolucion(libro_id: int, usuario_id: int) -> bool:
+def registrar_devolucion(libro_id: int, usuario_id: int):
     """
     Registra la devolución de un préstamo activo
-
-    Busca el préstamo activo del libro y usuario indicados actualiza su estado
-    a 'devuelto' y registra la fecha de devolución
-
     """
     global ultimo_error
     try:
@@ -75,7 +71,7 @@ def get_prestamo_activo(libro_id: int, usuario_id: int):
         return None
 
 
-def list_prestamos_usuario(usuario_id: int) -> list:
+def list_prestamos_usuario(usuario_id: int):
     """
     Lista todos los préstamos de un usuario.
 

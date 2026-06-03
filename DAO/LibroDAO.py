@@ -124,7 +124,7 @@ def buscar_por_autor(autor: str):
     except Exception:
         return []
 
-def actualizar_disponibilidad(id_libro: int, disponible: bool) -> bool:
+def actualizar_disponibilidad(id_libro: int, disponible: bool) :
     """Actualiza el estado de disponibilidad de un libro gracias a su ID"""
     global ultimo_error
     estado = 1 if disponible else 0

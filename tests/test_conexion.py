@@ -14,7 +14,7 @@ class TestConexion(unittest.TestCase):
         resultado = getConexion()
 
         self.assertEqual(resultado, mock_conn)
-        mock_connect.assert_called_once()  # Solo verificamos que se llamó, no la ruta exacta
+        mock_connect.assert_called_once()
 
     @patch('builtins.print')
     @patch('Conexion.sqlite3.connect')

@@ -12,7 +12,6 @@ class TestBiblioteca(unittest.TestCase):
         """Prepara el entorno: limpia o resetea el estado"""
         biblioteca.ultimo_error = ""
 
-    # ======== TESTS DE PRESTAR LIBRO ========
     @patch('biblioteca.list_all')
     @patch('biblioteca.actualizar_disponibilidad')
     def test_prestar_libro_exitoso(self, mock_actualizar, mock_list):
@@ -63,7 +62,6 @@ class TestBiblioteca(unittest.TestCase):
         resultado = biblioteca.prestar_libro("El Quijote")
         self.assertEqual(resultado, "Error")
 
-    # ======== TESTS DE DEVOLVER LIBRO ========
 
     @patch('biblioteca.list_all')
     def test_devolver_libro_no_encontrado(self, mock_list):
@@ -102,7 +100,6 @@ class TestBiblioteca(unittest.TestCase):
         resultado = biblioteca.devolver_libro("El Quijote", 1)
         self.assertEqual(resultado, "Error")
 
-    # ======== TESTS DE AGREGAR LIBRO ========
     @patch('biblioteca.list_all')
     @patch('biblioteca.add_libro')
     def test_agregar_libro_exitoso(self, mock_add, mock_list):
@@ -141,7 +138,6 @@ class TestBiblioteca(unittest.TestCase):
         self.assertEqual(biblioteca.ultimo_error, "modo desconocido")
         biblioteca.modo = "normal"  # Restaurar
 
-    # ======== TESTS DE BORRAR LIBRO ========
     @patch('biblioteca.remove_libro')
     def test_borrar_libro_exitoso(self, mock_remove):
         """Test de borrar libro con éxito"""
@@ -172,7 +168,6 @@ class TestBiblioteca(unittest.TestCase):
         self.assertEqual(resultado, 0)
         self.assertEqual(biblioteca.ultimo_error, "Error de BD")
 
-    # ======== TESTS DE BUSCAR LIBRO ========
     @patch('biblioteca.list_all')
     def test_buscar_libro_encontrado(self, mock_list):
         """Test de buscar libro que existe"""
@@ -191,7 +186,6 @@ class TestBiblioteca(unittest.TestCase):
         resultado = biblioteca.buscar_libro("LibroFantasma")
         self.assertIsNone(resultado)
 
-    # ======== TESTS DE MOSTRAR LIBROS ========
     @patch('biblioteca.list_all')
     def test_mostrar_libros_vacio(self, mock_list):
         """Test para verificar salida cuando no hay libros"""
@@ -225,7 +219,6 @@ class TestBiblioteca(unittest.TestCase):
 
         self.assertIn("Error al listar", pantalla.getvalue())
 
-    # ======== TESTS DE USUARIOS ========
     @patch('biblioteca.UsuarioDAO.add_Usuario')
     def test_agregar_usuario(self, mock_add):
         """Test de agregar usuario"""
@@ -275,7 +268,6 @@ class TestBiblioteca(unittest.TestCase):
         with redirect_stdout(pantalla):
             biblioteca.mostrar_usuarios()
 
-        # Verificar que no imprime "No hay usuarios"
         self.assertNotIn("No hay usuarios", pantalla.getvalue())
 
     @patch('biblioteca.UsuarioDAO.buscar_por_email')
@@ -316,7 +308,6 @@ class TestBiblioteca(unittest.TestCase):
         resultado = biblioteca.deshabilitar_usuario(1)
         self.assertTrue(resultado)
 
-    # ======== TESTS DE BÚSQUEDAS DE LIBROS ========
     @patch('biblioteca.buscar_por_disponibilidad')
     def test_buscar_libros_por_disponibilidad_exitoso(self, mock_buscar):
         """Test de buscar libros por disponibilidad"""
@@ -384,7 +375,6 @@ class TestBiblioteca(unittest.TestCase):
         self.assertIsNone(resultado)
         self.assertEqual(biblioteca.ultimo_error, "Error de BD")
 
-    # ======== TEST DE FUNCIONES AUXILIARES ========
     def test_print_comentario_tipo_1(self):
         """Test de _print_comentario tipo 1"""
         pantalla = StringIO()
