@@ -200,9 +200,13 @@ def menu_prestamos():
         opcion = input("Selecciona una opción: ").strip()
 
         if opcion == "1":
-            titulo = input("Título del libro que se va a prestar: ")
-            resultado = prestar_libro(titulo)
-            print(f"Resultado del préstamo: {resultado}")
+            try:
+                id_lib = int(input("ID del libro que se va a prestar: "))
+                id_usu = int(input("ID del usuario que lo solicita: "))
+                resultado = prestar_libro(id_lib, id_usu)
+                print(f"Resultado del préstamo: {'Préstamo realizado con éxito' if resultado else 'No se pudo realizar el préstamo'}")
+            except ValueError:
+                print(" Los IDs deben ser números enteros.")
 
         elif opcion == "2":
             titulo = input("Título del libro a devolver: ")

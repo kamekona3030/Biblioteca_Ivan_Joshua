@@ -18,9 +18,9 @@ def ejecutar_script_sql():
         cursor.executescript(sql_script)
 
     except FileNotFoundError:
-        print(f"❌ Error: No se encontró el archivo en {SQL_FILE}")
+        print(f"Error: No se encontró el archivo en {SQL_FILE}")
     except sqlite3.Error as e:
-        print(f"❌ Error de SQLite durante la transacción: {e}")
+        print(f"Error de SQLite durante la transacción: {e}")
 
     finally:
         conn.close()

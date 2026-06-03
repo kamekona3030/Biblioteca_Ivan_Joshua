@@ -105,6 +105,12 @@ def prestar_libro(libro_id: int, usuario_id: int) -> bool:
         return False
 
     actualizar_disponibilidad(libro_id, False)
+
+    if not PrestamoDAO.registrar_prestamo(libro_id, usuario_id):
+        actualizar_disponibilidad(libro_id, True)
+        ultimo_error = PrestamoDAO.ultimo_error
+        return False
+
     ultimo_error = ""
     return True
 

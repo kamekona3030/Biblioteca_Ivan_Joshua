@@ -9,7 +9,7 @@ from Usuario import Usuario
 
 class TestBiblioteca(unittest.TestCase):
     def setUp(self):
-        """Prepara el entorno: limpia o resetea el estado"""
+        """Prepara el entorno: limpia el estado"""
         biblioteca.ultimo_error = ""
 
     @patch('biblioteca.UsuarioDAO.get_Usuario')

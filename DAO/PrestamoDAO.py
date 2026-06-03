@@ -5,6 +5,29 @@ from Conexion import getConexion
 ultimo_error = ""
 
 
+def registrar_prestamo(libro_id: int, usuario_id: int) -> bool:
+    """
+    Inserta un nuevo préstamo activo en la tabla prestamos
+    """
+    global ultimo_error
+    try:
+        with getConexion() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT INTO prestamos (libro_id, usuario_id, fecha_prestamo, estado)
+                VALUES (?, ?, DATE('now'), 'prestado')
+                """,
+                (libro_id, usuario_id)
+            )
+            conn.commit()
+        ultimo_error = ""
+        return True
+    except Exception as e:
+        ultimo_error = str(e)
+        return False
+
+
 def registrar_devolucion(libro_id: int, usuario_id: int):
     """
     Registra la devolución de un préstamo activo
