@@ -1,4 +1,4 @@
-from Prestamo import Prestamo
+from DTO.Prestamo import Prestamo
 from Conexion import getConexion
 
 """DAO encargado de gestionar los préstamos en la base de datos"""

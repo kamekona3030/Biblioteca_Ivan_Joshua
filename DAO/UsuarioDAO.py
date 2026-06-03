@@ -1,4 +1,4 @@
-from Usuario import Usuario
+from DTO.Usuario import Usuario
 from Conexion import getConexion
 
 ultimo_error = ""

@@ -4,7 +4,7 @@ import DAO.LibroDAO
 from DAO.LibroDAO import (add_libro, remove_libro, get_libro, list_all,
                           buscar_por_disponibilidad, buscar_por_autor,
                           actualizar_disponibilidad)
-from Libro import Libro
+from DTO.Libro import Libro
 
 class TestLibroDAO(unittest.TestCase):
 

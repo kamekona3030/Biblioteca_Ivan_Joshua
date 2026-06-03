@@ -4,8 +4,8 @@ import sqlite3
 
 def ejecutar_script_sql():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    SQL_FILE = os.path.join(BASE_DIR, "bd", "biblioteca.sql")
-    DB_FILE = os.path.join(BASE_DIR, "bd", "biblioteca.db")
+    SQL_FILE = os.path.join(BASE_DIR, "biblioteca.sql")
+    DB_FILE = os.path.join(BASE_DIR,  "biblioteca.db")
 
     conn = sqlite3.connect(DB_FILE, isolation_level=None)
     cursor = conn.cursor()

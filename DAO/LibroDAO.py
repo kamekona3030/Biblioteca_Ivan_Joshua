@@ -1,4 +1,4 @@
-from Libro import Libro
+from DTO.Libro import Libro
 from Conexion import getConexion
 
 """Clase encargada de hacer las llamada y peticiones a la base de datos"""

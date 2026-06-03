@@ -1,8 +1,9 @@
 from DAO import PrestamoDAO
-from Usuario import Usuario
+from DTO.Usuario import Usuario
 from DAO import UsuarioDAO
 from datetime import datetime
-from Libro import Libro
+from DTO.Libro import Libro
+from DAO.LogDAO import registrar_log
 from DAO.LibroDAO import (add_libro,get_libro,
                           remove_libro,list_all,buscar_por_autor,
                           buscar_por_disponibilidad,actualizar_disponibilidad)
@@ -111,6 +112,8 @@ def prestar_libro(libro_id: int, usuario_id: int) -> bool:
         ultimo_error = PrestamoDAO.ultimo_error
         return False
 
+    registrar_log(f"Usuario {usuario_id} ha prestado Libro {libro.titulo}")
+
     ultimo_error = ""
     return True
 
@@ -150,6 +153,7 @@ def devolver_libro(titulo: str, usuario_id: int):
         return "Error"
 
     ultimo_error = ""
+    registrar_log(f"Usuario {usuario_id} ha devuelto el Libro {titulo}")
     _print_comentario("Se devolvio el libro", "", 2)
     return "Libro devuelto"
 

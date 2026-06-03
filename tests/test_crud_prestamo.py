@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import DAO.PrestamoDAO
 from DAO.PrestamoDAO import registrar_devolucion, get_prestamo_activo, list_prestamos_usuario
-from Prestamo import Prestamo
+from DTO.Prestamo import Prestamo
 
 
 class TestPrestamoDAO(unittest.TestCase):

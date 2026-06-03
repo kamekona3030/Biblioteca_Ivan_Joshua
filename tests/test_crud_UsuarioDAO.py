@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from DAO import UsuarioDAO
-from Usuario import Usuario
+from DTO.Usuario import Usuario
 
 
 class TestUsuarioDAO(unittest.TestCase):
