@@ -5,7 +5,6 @@ def registrar_log(accion: str):
     try:
         with getConexion() as conn:
             cursor = conn.cursor()
-            # Asegura la existencia de la tabla antes de insertar
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS logs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -164,7 +164,6 @@ def cambiar_estado (id_usuario:int, habilitar:bool) -> bool:
     try:
         with getConexion() as conn:
             cursor = conn.cursor()
-            # Convertimos el booleano a entero (1 o 0) de forma segura para SQLite/BBDD
             estado_int = 1 if habilitar else 0
             cursor.execute(
                 "UPDATE usuarios SET habilitado = ? WHERE id_usuario = ?",
