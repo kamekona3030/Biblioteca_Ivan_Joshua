@@ -22,39 +22,38 @@ def _print_comentario(comentario, comentario_extra="", tipo_comentario=0):
 def agregar_libro(titulo, autor):
     """Crea y registra un nuevo libro en la base de datos"""
     global ultimo_error
-    if modo == "normal":
-        try:
-            libros_actuales = list_all()
-            nuevo_id = max([l.id for l in libros_actuales], default=0) + 1
+    if modo != "normal":
+        ultimo_error = "modo desconocido"
+        _print_comentario("Modo de operación no soportado", "", 2)
+        return
+    try:
+        libros_actuales = list_all()
+        nuevo_id = max([l.id for l in libros_actuales], default=0) + 1
 
-            nuevo_libro = Libro(
-                id_libro=nuevo_id,
-                titulo=titulo,
-                autor=autor,
-                isbn="000-00000-0",
-                disponible=True,
-                categoria="General"
-            )
+        nuevo_libro = Libro(
+            id_libro=nuevo_id,
+            titulo=titulo,
+            autor=autor,
+            isbn="000-00000-0",
+            disponible=True,
+            categoria="General"
+        )
 
-            nuevo_libro.id = nuevo_id
-            nuevo_libro.fecha_actualizacion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        nuevo_libro.id = nuevo_id
+        nuevo_libro.fecha_actualizacion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-            add_libro(nuevo_libro)
-            ultimo_error = ""
-            from DAO import LibroDAO
-            if LibroDAO.ultimo_error:
-                ultimo_error = LibroDAO.ultimo_error
-                _print_comentario(f" Error en el DAO: {ultimo_error}", "", 2)
-            else:
-                ultimo_error = ""
-                _print_comentario("Libro agregado con éxito: ", titulo, 1)
-
-        except Exception as e:
-            ultimo_error = str(e)
-            _print_comentario(f" Error en gestión: {e}", "", 2)
+        add_libro(nuevo_libro)
+        from DAO import LibroDAO
+        if LibroDAO.ultimo_error:
+            ultimo_error = LibroDAO.ultimo_error
+            _print_comentario(f" Error en el DAO: {ultimo_error}", "", 2)
         else:
-            ultimo_error = "modo desconocido"
+            ultimo_error = ""
             _print_comentario("Libro agregado: ", titulo, 1)
+    except Exception as e:
+        ultimo_error = str(e)
+        _print_comentario(f" Error en gestión: {e}", "", 2)
+
 
 def borrar_libro(id_libro: int):
     """Elimina un libro por su ID"""

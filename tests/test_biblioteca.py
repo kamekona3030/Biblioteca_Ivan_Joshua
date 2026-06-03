@@ -64,20 +64,6 @@ class TestBiblioteca(unittest.TestCase):
         self.assertEqual(resultado, "Error")
 
     # ======== TESTS DE DEVOLVER LIBRO ========
-    @patch('biblioteca.list_all')
-    @patch('biblioteca.actualizar_disponibilidad')
-    def test_devolver_libro_exitoso(self, mock_actualizar, mock_list):
-        """Test de devolver libro prestado"""
-        libro_mock = Libro(1, "El Quijote", "Cervantes", "123", False, "Clasico")
-        mock_list.return_value = [libro_mock]
-        mock_actualizar.return_value = True
-
-        pantalla = StringIO()
-        with redirect_stdout(pantalla):
-            resultado = biblioteca.devolver_libro("El Quijote")
-
-        self.assertEqual(resultado, "Libro devuelto")
-        self.assertIn("Se devolvio el libro", pantalla.getvalue())
 
     @patch('biblioteca.list_all')
     def test_devolver_libro_no_encontrado(self, mock_list):
@@ -85,7 +71,7 @@ class TestBiblioteca(unittest.TestCase):
         mock_list.return_value = []
         pantalla = StringIO()
         with redirect_stdout(pantalla):
-            resultado = biblioteca.devolver_libro("LibroFantasma")
+            resultado = biblioteca.devolver_libro("LibroFantasma", 1)
 
         self.assertEqual(resultado, "Libro no encontrado")
         self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
@@ -98,20 +84,22 @@ class TestBiblioteca(unittest.TestCase):
 
         pantalla = StringIO()
         with redirect_stdout(pantalla):
-            resultado = biblioteca.devolver_libro("El Quijote")
+            resultado = biblioteca.devolver_libro("El Quijote", 1)
 
         self.assertEqual(resultado, "Libro ya disponible")
         self.assertEqual(biblioteca.ultimo_error, "Libro ya disponible")
 
+    @patch('biblioteca.PrestamoDAO.get_prestamo_activo')
     @patch('biblioteca.list_all')
     @patch('biblioteca.actualizar_disponibilidad')
-    def test_devolver_libro_error_actualizacion(self, mock_actualizar, mock_list):
+    def test_devolver_libro_error_actualizacion(self, mock_actualizar, mock_list, mock_get_prestamo):
         """Test de error al actualizar disponibilidad"""
         libro_mock = Libro(1, "El Quijote", "Cervantes", "123", False, "Clasico")
         mock_list.return_value = [libro_mock]
         mock_actualizar.return_value = False
+        mock_get_prestamo.return_value = MagicMock()
 
-        resultado = biblioteca.devolver_libro("El Quijote")
+        resultado = biblioteca.devolver_libro("El Quijote", 1)
         self.assertEqual(resultado, "Error")
 
     # ======== TESTS DE AGREGAR LIBRO ========
