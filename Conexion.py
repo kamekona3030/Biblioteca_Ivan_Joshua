@@ -1,6 +1,7 @@
 import sqlite3
-URL = "bd/biblioteca.db"
-
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+URL = os.path.join(BASE_DIR, "bd", "biblioteca.db")
 def getConexion():
 
     """Establece y devuelve la conexión con la base de datos """

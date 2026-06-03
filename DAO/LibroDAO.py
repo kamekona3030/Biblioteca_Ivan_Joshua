@@ -2,6 +2,8 @@ from Libro import Libro
 from Conexion import getConexion
 
 """Clase encargada de hacer las llamada y peticiones a la base de datos"""
+ultimo_error = ""
+
 def add_libro(libro: Libro):
     """En metodo add libro es el encargado de añadir libros a la base de datos"""
     global ultimo_error

@@ -12,8 +12,7 @@ class TestBaseDatosInicial(unittest.TestCase):
             # 1. Validar tabla 'libros'
             tablas_libros = conexion.execute("PRAGMA table_info(libros)").fetchall()
             columnas_libros = [info[1] for info in tablas_libros]
-            columnas_esperadas_libros = ["id", "titulo", "autor", "disponible", "isbn", "categoria",
-                                         "fecha_actualizacion"]
+            columnas_esperadas_libros = ["id", "titulo", "autor", "isbn", "disponible", "categoria", "fecha_actualizacion"]
             self.assertEqual(columnas_libros, columnas_esperadas_libros, "Error en estructura de tabla 'libros'")
 
             # 2. Validar tabla 'usuarios'

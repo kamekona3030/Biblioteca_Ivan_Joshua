@@ -6,7 +6,6 @@ ultimo_error = ""
 def add_Usuario(usuario:Usuario):
     global ultimo_error
 
-
     try:
         with getConexion() as conn:
             cursor = conn.cursor()
@@ -18,10 +17,11 @@ def add_Usuario(usuario:Usuario):
                 (usuario.id, usuario.nombre, usuario.apellidos, usuario.email, usuario.habilitado),
             )
             conn.commit()
-            ultimo_error= ""
+            ultimo_error = ""
+            return 1
     except Exception as e:
         ultimo_error = str(e)
-    return 0
+        return 0
 
 
 def get_Usuario(id_usuario:int):
