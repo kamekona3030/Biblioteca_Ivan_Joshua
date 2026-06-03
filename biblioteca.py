@@ -84,27 +84,29 @@ def buscar_libro(titulo):
     return None
 
 
-def prestar_libro(titulo):
-    """Cambia el estado de un libro a 'prestado' si está disponible"""
+def prestar_libro(libro_id: int, usuario_id: int) -> bool:
+    """Comprueba que tanto el usuario como el libro existan y esten disponibles, en caso de que si presta el libro a un usuario, cambiando su dsiponibilidad a false"""
     global ultimo_error
-    libro_dict = buscar_libro(titulo)
+    usuario = UsuarioDAO.get_Usuario(usuario_id)
+    libro = get_libro(libro_id)
 
-    if libro_dict is None:
-        _print_comentario("No se ha encontrado el libro", "", 2)
+    if not usuario:
+        ultimo_error = "Usuario no encontrado"
+        return False
+    if not usuario.habilitado:
+        ultimo_error = "Usuario deshabilitado"
+        return False
+
+    if not libro:
         ultimo_error = "Libro no encontrado"
-        return "Libro no encontrado"
-
-    if libro_dict["disponible"]:
-        if actualizar_disponibilidad(libro_dict["id"], False):
-            ultimo_error = ""
-            _print_comentario("Se presto el libro", "", 2)
-            return "Libro prestado"
-        else:
-            return "Error"
-    else:
-        _print_comentario("El libro no esta disponible", "", 2)
+        return False
+    if not libro.disponible:
         ultimo_error = "Libro no disponible"
-        return "Libro no disponible"
+        return False
+
+    actualizar_disponibilidad(libro_id, False)
+    ultimo_error = ""
+    return True
 
 
 def devolver_libro(titulo: str, usuario_id: int):

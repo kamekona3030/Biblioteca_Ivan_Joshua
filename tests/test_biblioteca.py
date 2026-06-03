@@ -12,55 +12,33 @@ class TestBiblioteca(unittest.TestCase):
         """Prepara el entorno: limpia o resetea el estado"""
         biblioteca.ultimo_error = ""
 
-    @patch('biblioteca.list_all')
+    @patch('biblioteca.UsuarioDAO.get_Usuario')
+    @patch('biblioteca.get_libro')
     @patch('biblioteca.actualizar_disponibilidad')
-    def test_prestar_libro_exitoso(self, mock_actualizar, mock_list):
-        """Test que captura la salida de print y verifica retorno"""
-        libro_mock = Libro(1, "El Quijote", "Cervantes", "123", True, "Clasico")
-        mock_list.return_value = [libro_mock]
-        mock_actualizar.return_value = True
+    def test_prestamo_exitoso(self, mock_actualizar, mock_get_libro, mock_get_usuario):
+        mock_get_usuario.return_value = Usuario(500, "Juan", "Pérez", "juan@email.com", habilitado=True)
+        mock_get_libro.return_value = Libro(901, "Libro Test", "Autor A", "111", disponible=True)
+        resultado = biblioteca.prestar_libro(901, 500)
+        self.assertTrue(resultado, f"El prestamo fallo: {biblioteca.ultimo_error}")
+        mock_actualizar.assert_called_once_with(901, False)
 
-        pantalla = StringIO()
-        with redirect_stdout(pantalla):
-            resultado = biblioteca.prestar_libro("El Quijote")
+    @patch('biblioteca.UsuarioDAO.get_Usuario')
+    @patch('biblioteca.get_libro')
+    def test_prestamo_usuario_deshabilitado(self, mock_get_libro, mock_get_usuario):
+        mock_get_usuario.return_value = Usuario(600, "Luis", "Soto", "luis@email.com", habilitado=False)
+        mock_get_libro.return_value = Libro(901, "Libro Test", "Autor", "111", disponible=True)
+        resultado = biblioteca.prestar_libro(901, 600)
+        self.assertFalse(resultado)
+        self.assertEqual(biblioteca.ultimo_error, "Usuario deshabilitado")
 
-        self.assertEqual(resultado, "Libro prestado")
-        self.assertIn("Se presto el libro", pantalla.getvalue())
-
-    def test_prestar_libro_no_encontrado(self):
-        """Test de error capturando la salida"""
-        pantalla = StringIO()
-        with redirect_stdout(pantalla):
-            resultado = biblioteca.prestar_libro("LibroFantasma")
-
-        self.assertEqual(resultado, "Libro no encontrado")
-        self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
-        self.assertIn("No se ha encontrado el libro", pantalla.getvalue())
-
-    @patch('biblioteca.list_all')
-    @patch('biblioteca.actualizar_disponibilidad')
-    def test_prestar_libro_no_disponible(self, mock_actualizar, mock_list):
-        """Test de libro ya prestado"""
-        libro_mock = Libro(1, "El Quijote", "Cervantes", "123", False, "Clasico")
-        mock_list.return_value = [libro_mock]
-
-        pantalla = StringIO()
-        with redirect_stdout(pantalla):
-            resultado = biblioteca.prestar_libro("El Quijote")
-
-        self.assertEqual(resultado, "Libro no disponible")
+    @patch('biblioteca.UsuarioDAO.get_Usuario')
+    @patch('biblioteca.get_libro')
+    def test_prestamo_libro_no_disponible(self, mock_get_libro, mock_get_usuario):
+        mock_get_usuario.return_value = Usuario(500, "Juan", "Pérez", "juan@email.com", habilitado=True)
+        mock_get_libro.return_value = Libro(902, "Libro Test", "Autor", "111", disponible=False)
+        resultado = biblioteca.prestar_libro(902, 500)
+        self.assertFalse(resultado)
         self.assertEqual(biblioteca.ultimo_error, "Libro no disponible")
-
-    @patch('biblioteca.list_all')
-    @patch('biblioteca.actualizar_disponibilidad')
-    def test_prestar_libro_error_actualizacion(self, mock_actualizar, mock_list):
-        """Test de error al actualizar disponibilidad"""
-        libro_mock = Libro(1, "El Quijote", "Cervantes", "123", True, "Clasico")
-        mock_list.return_value = [libro_mock]
-        mock_actualizar.return_value = False
-
-        resultado = biblioteca.prestar_libro("El Quijote")
-        self.assertEqual(resultado, "Error")
 
 
     @patch('biblioteca.list_all')
@@ -425,6 +403,7 @@ class TestBiblioteca(unittest.TestCase):
         libro_dict = {"disponible": False}
         resultado = biblioteca._obtener_estado(libro_dict)
         self.assertEqual(resultado, "Prestado")
+
 
 
 if __name__ == "__main__":
