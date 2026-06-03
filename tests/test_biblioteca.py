@@ -15,7 +15,9 @@ class TestBiblioteca(unittest.TestCase):
     @patch('Main.biblioteca.UsuarioDAO.get_Usuario')
     @patch('Main.biblioteca.get_libro')
     @patch('Main.biblioteca.actualizar_disponibilidad')
-    def test_prestamo_exitoso(self, mock_actualizar, mock_get_libro, mock_get_usuario):
+    @patch('Main.biblioteca.PrestamoDAO.registrar_prestamo')
+    def test_prestamo_exitoso(self,mock_registrar_prestamo, mock_actualizar, mock_get_libro, mock_get_usuario):
+        mock_registrar_prestamo.return_value = True
         mock_get_usuario.return_value = Usuario(500, "Juan", "Pérez", "juan@email.com", habilitado=True)
         mock_get_libro.return_value = Libro(901, "Libro Test", "Autor A", "111", disponible=True)
         resultado = biblioteca.prestar_libro(901, 500)

@@ -1,6 +1,4 @@
 import sys
-# Importamos todas las funciones de tu módulo de gestión
-# NOTA: Cambia 'gestion_biblioteca' por el nombre real de tu archivo de funciones
 from biblioteca import (
     agregar_libro, borrar_libro, buscar_libro, prestar_libro, devolver_libro,
     mostrar_libros, agregar_usuario, obtener_usuario, eliminar_usuario,
