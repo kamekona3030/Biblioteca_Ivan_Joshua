@@ -1,5 +1,5 @@
 import sys
-from biblioteca import (
+from Main.biblioteca import (
     agregar_libro, borrar_libro, buscar_libro, prestar_libro, devolver_libro,
     mostrar_libros, agregar_usuario, obtener_usuario, eliminar_usuario,
     mostrar_usuarios, buscar_usuario_por_email, buscar_usuario_por_nombre_parcial,
@@ -9,6 +9,7 @@ from biblioteca import (
 
 
 def menu_principal():
+    """Menu principal del sistema"""
     while True:
         print("\n" + "=" * 40)
         print("     SISTEMA DE GESTIÓN DE BIBLIOTECA    ")
@@ -35,6 +36,7 @@ def menu_principal():
 
 
 def menu_libros():
+    """Menu secundario del sistema encargado de la parte de libros"""
     while True:
         print("\n--- SUBMENÚ: GESTIÓN DE LIBROS ---")
         print("1. Añadir nuevo libro")
@@ -103,6 +105,8 @@ def menu_libros():
 
 
 def menu_usuarios():
+    """Menu secundario del sistema encargado de la parte de usuarios"""
+
     while True:
         print("\n---  SUBMENÚ: GESTIÓN DE USUARIOS ---")
         print("1. Registrar nuevo usuario")
@@ -190,6 +194,8 @@ def menu_usuarios():
 
 
 def menu_prestamos():
+    """Menu secundario del sistema encargado de la parte de prestamos"""
+
     while True:
         print("\n--- SUBMENÚ: PRÉSTAMOS Y DEVOLUCIONES ---")
         print("1. Prestar un libro")

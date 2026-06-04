@@ -176,24 +176,32 @@ def mostrar_libros():
         _print_comentario(f"Error al listar: {e}", "", 2)
 
 def agregar_usuario(id_usuario: int, nombre: str, apellidos: str, email: str, habilitado: bool):
+    """Crea y registra un nuevo usuario en la base de datos"""
+
     global ultimo_error
     nuevo_usuariio = Usuario(id_usuario, nombre, apellidos, email, habilitado)
     UsuarioDAO.add_Usuario(nuevo_usuariio)
     ultimo_error = UsuarioDAO.ultimo_error
 
 def obtener_usuario(id_usuario: int):
+    """Busca un usuario por su id y lo devuelve"""
+
     global ultimo_error
     usuario = UsuarioDAO.get_Usuario(id_usuario)
     ultimo_error = UsuarioDAO.ultimo_error
     return usuario
 
 def eliminar_usuario(id_usuario: int):
+    """Busca un usuario por su id y lo elimina"""
+
     global ultimo_error
     filas = UsuarioDAO.remove_Usuario(id_usuario)
     ultimo_error = UsuarioDAO.ultimo_error
     return filas
 
 def mostrar_usuarios():
+    """Imprime en consola la lista completa de usuarios registrados"""
+
     global ultimo_error
     lista_usuarios = UsuarioDAO.list_all_Usuarios()
     ultimo_error = UsuarioDAO.ultimo_error
@@ -204,12 +212,15 @@ def mostrar_usuarios():
             print(usuario)
 
 def buscar_usuario_por_email(email: str):
+    """Busca un usuario por su email y lo trae"""
     global ultimo_error
     usuario = UsuarioDAO.buscar_por_email(email)
     ultimo_error = UsuarioDAO.ultimo_error
     return usuario
 
 def buscar_usuario_por_nombre_parcial(nombre: str):
+    """Busca un usuario por su nombre de manera parcial y trae una lista donde esten todas las ocurrencias"""
+
     global ultimo_error
     lista = UsuarioDAO.buscar_por_nombre_parcial(nombre)
     ultimo_error = UsuarioDAO.ultimo_error
@@ -217,12 +228,16 @@ def buscar_usuario_por_nombre_parcial(nombre: str):
 
 
 def habilitar_usuario(id_usuario: int):
+    """Busca un usuario por su id y lo habilita"""
+
     global ultimo_error
     resultado = UsuarioDAO.habilitar_usuario(id_usuario)
     ultimo_error = UsuarioDAO.ultimo_error
     return resultado
 
 def deshabilitar_usuario(id_usuario: int):
+    """Busca un usuario por su id y lo deshabilita"""
+
     global ultimo_error
     resultado = UsuarioDAO.deshabilitar_usuario(id_usuario)
     ultimo_error = UsuarioDAO.ultimo_error

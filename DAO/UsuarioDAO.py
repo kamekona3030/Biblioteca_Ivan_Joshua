@@ -4,6 +4,8 @@ from Conexion import getConexion
 ultimo_error = ""
 
 def add_Usuario(usuario:Usuario):
+    """El metodo add usuario es el encargado de añadir usuarios a la base de datos"""
+
     global ultimo_error
 
     try:
@@ -25,6 +27,8 @@ def add_Usuario(usuario:Usuario):
 
 
 def get_Usuario(id_usuario:int):
+    """El metodo get usuario sirve para pedirle a la base de datos los datos de un usuario"""
+
     global ultimo_error
 
     try:
@@ -51,6 +55,8 @@ def get_Usuario(id_usuario:int):
         return None
 
 def remove_Usuario(id_usuario:int):
+    """El metodo remove es el encargado de eliminar los usuarios de la base de datos"""
+
     global ultimo_error
 
     try:
@@ -66,6 +72,7 @@ def remove_Usuario(id_usuario:int):
         return 0
 
 def list_all_Usuarios():
+    """list_all_Usuarios da una lista de todos los usuarios que hay en la base de datos"""
     global ultimo_error
 
     try:
@@ -94,6 +101,8 @@ def list_all_Usuarios():
 
 
 def buscar_por_email(email: str):
+    """Filtra usuarios por su email"""
+
     global ultimo_error
 
 
@@ -121,6 +130,7 @@ def buscar_por_email(email: str):
         return None
 
 def buscar_por_nombre_parcial(nombre: str):
+    """Filtra usuarios por su nombre o apellidos"""
     global ultimo_error
 
 
@@ -159,6 +169,7 @@ def buscar_por_nombre_parcial(nombre: str):
 
 
 def cambiar_estado (id_usuario:int, habilitar:bool) -> bool:
+    """Cambia el estado de un usuario gracias a su id"""
     global ultimo_error
 
     try:
@@ -184,10 +195,12 @@ def cambiar_estado (id_usuario:int, habilitar:bool) -> bool:
 
 
 def habilitar_usuario(id_usuario:int) -> bool:
+    """Llama a cambiar estado para habilitar un usuario segun su id"""
     return cambiar_estado(id_usuario, True)
 
 
 def deshabilitar_usuario(id_usuario:int) -> bool:
+    """Llama a cambiar estado para deshabilitar un usuario segun su id"""
     return cambiar_estado(id_usuario, False)
 
 
