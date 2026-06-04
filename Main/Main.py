@@ -1,5 +1,5 @@
 import sys
-from Main.biblioteca import (
+from biblioteca import (
     agregar_libro, borrar_libro, buscar_libro, prestar_libro, devolver_libro,
     mostrar_libros, agregar_usuario, obtener_usuario, eliminar_usuario,
     mostrar_usuarios, buscar_usuario_por_email, buscar_usuario_por_nombre_parcial,
