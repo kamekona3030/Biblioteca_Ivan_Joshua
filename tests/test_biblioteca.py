@@ -49,35 +49,35 @@ class TestBiblioteca(unittest.TestCase):
         mock_list.return_value = []
         pantalla = StringIO()
         with redirect_stdout(pantalla):
-            resultado = biblioteca.devolver_libro("LibroFantasma", 1)
+            resultado = biblioteca.devolver_libro(0, 1)
 
         self.assertEqual(resultado, "Libro no encontrado")
         self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
 
-    @patch('Main.biblioteca.list_all')
-    def test_devolver_libro_ya_disponible(self, mock_list):
+    @patch('Main.biblioteca.get_libro')
+    def test_devolver_libro_ya_disponible(self, mock_get_libro):
         """Test de devolver libro que ya está disponible"""
         libro_mock = Libro(1, "El Quijote", "Cervantes", "123", True, "Clasico")
-        mock_list.return_value = [libro_mock]
+        mock_get_libro.return_value = libro_mock
 
         pantalla = StringIO()
         with redirect_stdout(pantalla):
-            resultado = biblioteca.devolver_libro("El Quijote", 1)
+            resultado = biblioteca.devolver_libro(1, 1)
 
         self.assertEqual(resultado, "Libro ya disponible")
         self.assertEqual(biblioteca.ultimo_error, "Libro ya disponible")
 
     @patch('Main.biblioteca.PrestamoDAO.get_prestamo_activo')
-    @patch('Main.biblioteca.list_all')
+    @patch('Main.biblioteca.get_libro')
     @patch('Main.biblioteca.actualizar_disponibilidad')
-    def test_devolver_libro_error_actualizacion(self, mock_actualizar, mock_list, mock_get_prestamo):
+    def test_devolver_libro_error_actualizacion(self, mock_actualizar, mock_get_libro, mock_get_prestamo):
         """Test de error al actualizar disponibilidad"""
         libro_mock = Libro(1, "El Quijote", "Cervantes", "123", False, "Clasico")
-        mock_list.return_value = [libro_mock]
+        mock_get_libro.return_value = libro_mock
         mock_actualizar.return_value = False
         mock_get_prestamo.return_value = MagicMock()
 
-        resultado = biblioteca.devolver_libro("El Quijote", 1)
+        resultado = biblioteca.devolver_libro(1, 1)
         self.assertEqual(resultado, "Error")
 
     @patch('Main.biblioteca.list_all')
@@ -421,6 +421,13 @@ class TestBiblioteca(unittest.TestCase):
         resultado = biblioteca.prestar_libro(901, 500)
         self.assertTrue(resultado)
         mock_registrar_log.assert_called_once_with("Usuario 500 ha prestado Libro El Quijote")
+
+    def test_generar_isbn_secuencial(self):
+        """Test de que el ISBN se genera a partir del id de forma secuencial"""
+        self.assertEqual(biblioteca._generar_isbn(1), "000-00001-0")
+        self.assertEqual(biblioteca._generar_isbn(42), "000-00042-0")
+        self.assertNotEqual(biblioteca._generar_isbn(1), biblioteca._generar_isbn(2))
+
 
 
 if __name__ == "__main__":

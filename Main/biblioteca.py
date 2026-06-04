@@ -20,7 +20,10 @@ def _print_comentario(comentario, comentario_extra="", tipo_comentario=0):
     else:
         print(str(comentario))
 
-def agregar_libro(titulo, autor):
+def _generar_isbn(numero: int) -> str:
+    return f"000-{numero:05d}-0"
+
+def agregar_libro(titulo, autor, categoria="General"):
     """Crea y registra un nuevo libro en la base de datos"""
     global ultimo_error
     if modo != "normal":
@@ -35,9 +38,9 @@ def agregar_libro(titulo, autor):
             id_libro=nuevo_id,
             titulo=titulo,
             autor=autor,
-            isbn="000-00000-0",
+            isbn=_generar_isbn(nuevo_id),
             disponible=True,
-            categoria="General"
+            categoria=categoria
         )
 
         nuevo_libro.id = nuevo_id
@@ -118,42 +121,39 @@ def prestar_libro(libro_id: int, usuario_id: int) -> bool:
     return True
 
 
-def devolver_libro(titulo: str, usuario_id: int):
+def devolver_libro(libro_id: int, usuario_id: int):
     """
     Registra la devolución de un libro prestado.
 
-    Busca el libro por título, verifica que esté prestado, actualiza su
+    Busca el libro por su ID único, verifica que esté prestado, actualiza su
     disponibilidad a True y registra la devolución en la tabla de préstamos.
     """
     global ultimo_error
-    libro_dict = buscar_libro(titulo)
+    libro = get_libro(libro_id)
+    prestamo = PrestamoDAO.get_prestamo_activo(libro_id, usuario_id)
 
-    if libro_dict is None:
+    if libro is None:
         _print_comentario("No se encontro el libro", "", 2)
         ultimo_error = "Libro no encontrado"
         return "Libro no encontrado"
-
-    if libro_dict["disponible"]:
+    if libro.disponible:
         _print_comentario("El libro ya estaba disponible", "", 2)
         ultimo_error = "Libro ya disponible"
         return "Libro ya disponible"
-
-    prestamo = PrestamoDAO.get_prestamo_activo(libro_dict["id"], usuario_id)
     if prestamo is None:
         _print_comentario("No se encontro un prestamo activo para este usuario", "", 2)
         ultimo_error = "Préstamo no encontrado"
         return "Préstamo no encontrado"
-
-    if not actualizar_disponibilidad(libro_dict["id"], True):
+    if not actualizar_disponibilidad(libro_id, True):
         ultimo_error = "Error al actualizar disponibilidad"
         return "Error"
 
-    if not PrestamoDAO.registrar_devolucion(libro_dict["id"], usuario_id):
+    if not PrestamoDAO.registrar_devolucion(libro_id, usuario_id):
         ultimo_error = PrestamoDAO.ultimo_error
         return "Error"
 
     ultimo_error = ""
-    registrar_log(f"Usuario {usuario_id} ha devuelto el Libro {titulo}")
+    registrar_log(f"Usuario {usuario_id} ha devuelto el Libro con ID {libro_id}")
     _print_comentario("Se devolvio el libro", "", 2)
     return "Libro devuelto"
 

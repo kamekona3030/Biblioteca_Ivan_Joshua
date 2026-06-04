@@ -51,7 +51,8 @@ def menu_libros():
         if opcion == "1":
             titulo = input("Título del libro: ")
             autor = input("Autor del libro: ")
-            agregar_libro(titulo, autor)
+            categoria = input("Categoria del libro: ")
+            agregar_libro(titulo, autor, categoria)
 
         elif opcion == "2":
             print("\n--- Listado de Libros ---")
@@ -207,10 +208,10 @@ def menu_prestamos():
                 print(" Los IDs deben ser números enteros.")
 
         elif opcion == "2":
-            titulo = input("Título del libro a devolver: ")
+            id_libro = int(input("ID del libro que se va a devolver: "))
             try:
                 id_usu = int(input("ID del usuario que lo devuelve: "))
-                resultado = devolver_libro(titulo, id_usu)
+                resultado = devolver_libro(id_libro, id_usu)
                 print(f"Resultado de la devolución: {resultado}")
             except ValueError:
                 print(" El ID del usuario debe ser un número entero.")
